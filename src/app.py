@@ -16,9 +16,9 @@ app = Dash(__name__,
                }
            ])
 
-# app.layout = html.Div([
-#     # page_container
-# ])
+app.layout = html.Div([
+    # page_container
+])
 
 
 if __name__ == '__main__':

@@ -22,24 +22,11 @@ def request_seismic_data(date):
     :param date:
     """
     try:
-        response = requests.get(f"{config.URL}api/{'activity'}/?date={date}")
+        URL = f"{config.URL}api/{'activity'}/?date={date}"
+        response = requests.get(URL)
         data = json.loads(response.text)
-        print(f"Success: {response}")
+        print(f"Success: {response} - {URL}")
         return pd.DataFrame(data['responseData']), True
     except Exception as e:
         print(f"Network Error: {e}")
-        return pd.DataFrame([{
-            'paladin1_geophone1': 0.0,
-            'paladin1_geophone2': 0.0,
-            'paladin1_geophone3': 0.0,
-            'paladin1_fba1': 0.0,
-            'paladin1_fba2': 0.0,
-            'paladin1_fba3': 0.0,
-            'paladin2_geophone1': 0.0,
-            'paladin2_geophone2': 0.0,
-            'paladin2_geophone3': 0.0,
-            'paladin2_fba1': 0.0,
-            'paladin2_fba2': 0.0,
-            'paladin2_fba3': 0.0,
-            'datetime': '',
-        }]), False
+        return config.GRAPH_STATIC_DATA, False

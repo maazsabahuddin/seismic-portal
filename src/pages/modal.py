@@ -8,7 +8,7 @@ danger_modal = dbc.Modal(
         dbc.ModalBody(dbc.Alert("Network failure. Please try again.")),
         dbc.ModalFooter(
             dbc.Button(
-                "Close", id="close", className="ms-auto", n_clicks=0
+                "Close", id="close", className="ms-auto", n_clicks=0, disabled=True
             )
         ),
     ],

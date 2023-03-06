@@ -1,10 +1,8 @@
 # Python imports
-from pydoc import classname
-
 import dash
 
 # Local Imports
-from src.pages.modal import danger_modal
+from src.pages import modal
 from src.utils import request_utils
 from src.config import config
 
@@ -15,6 +13,19 @@ import plotly.express as px
 
 
 dash.register_page(__name__)
+
+
+def get_dataframe(date=None):
+    """
+    This function is reponsible to return a dataframe object by fetching data from backend.
+    :param date:
+    :return:
+    """
+    df, success = request_utils.request_seismic_data(date=date)
+    return df, success
+
+
+dataframe_obj, status = get_dataframe(date=config.global_date)
 
 
 def display_graph(y_axis=None, title=None, df=None):
@@ -41,7 +52,8 @@ layout = html.Div([
     html.Div(dcc.Input(id='input-on-submit', type='text', value=config.global_date)),
     html.Button('Submit', id='submit-val', n_clicks=0),
 
-    html.Center(danger_modal),
+    html.Center(modal.danger_modal),
+
     dcc.Loading(
         id="loading-1",
         type="default",
@@ -91,21 +103,6 @@ layout = html.Div([
 
 
 @callback(
-    Output("modal", "is_open"),
-    [Input("close", "n_clicks")],
-    [State("modal", "is_open")],
-)
-def toggle_modal(n2, is_open):
-    if n2:
-        return not is_open
-
-    success = request_utils.check_server_status(url=config.URL)
-    if success:
-        return is_open
-    return not is_open
-
-
-@callback(
     Output('heading', 'children'),
     Input('submit-val', 'n_clicks'),
     State('input-on-submit', 'value'),
@@ -118,156 +115,68 @@ def update_output_heading(n_clicks, value):
 
 
 @callback(
-    Output(component_id='graph1', component_property='figure'),
-    Input('submit-val', 'n_clicks'),
-    State('input-on-submit', 'value'),
-    prevent_initial_call=True
+    [Output(component_id='graph1', component_property='figure'),
+     Output(component_id='graph2', component_property='figure'),
+     Output(component_id='graph3', component_property='figure'),
+     Output(component_id='graph4', component_property='figure'),
+     Output(component_id='graph5', component_property='figure'),
+     Output(component_id='graph6', component_property='figure'),
+     Output(component_id='graph7', component_property='figure'),
+     Output(component_id='graph8', component_property='figure'),
+     # Output(component_id='graph9', component_property='figure'),
+     # Output(component_id='graph10', component_property='figure'),
+     # Output(component_id='graph11', component_property='figure'),
+     # Output(component_id='graph12', component_property='figure'),
+     Output(component_id="modal", component_property="is_open")],
+
+    [Input('submit-val', 'n_clicks'),
+     Input("close", "n_clicks")],
+
+    [State('input-on-submit', 'value'),
+     State("modal", "is_open")]
 )
-def update_output_graph1(n_clicks, value):
-    df, success = request_utils.request_seismic_data(date=value)
-    if success:
-        return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=df)
-    return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=df)
+def update_output_graph1(n_submit, n_clicks_close, value, is_open):
+    """
+    This function will be responsible to send the updated data to graphs.
+    :param n_submit:
+    :param n_clicks_close:
+    :param value:
+    :param is_open:
+    :return:
+    """
+    if n_clicks_close:
+        return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin1_geophone2', title="Paladin1 GP2", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin1_geophone3', title="Paladin1 GP3", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA1", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin1_fba2', title="Paladin1 FBA2", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin1_fba3', title="Paladin1 FBA3", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin2_geophone1', title="Paladin2 GP1", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin2_geophone2', title="Paladin2 GP2", df=config.GRAPH_STATIC_DATA), \
+            not is_open
+            # display_graph(y_axis='paladin2_geophone3', title="Paladin2 GP3", df=config.GRAPH_STATIC_DATA), \
+            # display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA1", df=config.GRAPH_STATIC_DATA), \
+            # display_graph(y_axis='paladin2_fba2', title="Paladin2 FBA2", df=config.GRAPH_STATIC_DATA), \
+            # display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=config.GRAPH_STATIC_DATA), \
+            # not is_open
 
+    # Fetch data from Server is the date is different
+    global dataframe_obj, status
+    if value != config.global_date:
+        dataframe_obj, status = get_dataframe(date=value)
 
-@callback(
-    Output(component_id='graph2', component_property='figure'),
-    Input('submit-val', 'n_clicks'),
-    State('input-on-submit', 'value'),
-    prevent_initial_call=True
-)
-def update_output_graph1(n_clicks, value):
-    df, success = request_utils.request_seismic_data(date=value)
-    if success:
-        return display_graph(y_axis='paladin1_geophone2', title="Paladin1 GP2", df=df)
-    return display_graph(y_axis='paladin1_geophone2', title="Paladin1 GP2", df=df)
-
-
-@callback(
-    Output(component_id='graph3', component_property='figure'),
-    Input('submit-val', 'n_clicks'),
-    State('input-on-submit', 'value'),
-    prevent_initial_call=True
-)
-def update_output_graph1(n_clicks, value):
-    df, success = request_utils.request_seismic_data(date=value)
-    if success:
-        return display_graph(y_axis='paladin1_geophone3', title="Paladin1 GP3", df=df)
-    return display_graph(y_axis='paladin1_geophone3', title="Paladin1 GP3", df=df)
-
-
-@callback(
-    Output(component_id='graph4', component_property='figure'),
-    Input('submit-val', 'n_clicks'),
-    State('input-on-submit', 'value'),
-    prevent_initial_call=True
-)
-def update_output_graph1(n_clicks, value):
-    df, success = request_utils.request_seismic_data(date=value)
-    if success:
-        return display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA1", df=df)
-    return display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA1", df=df)
-
-
-@callback(
-    Output(component_id='graph5', component_property='figure'),
-    Input('submit-val', 'n_clicks'),
-    State('input-on-submit', 'value'),
-    prevent_initial_call=True
-)
-def update_output_graph1(n_clicks, value):
-    df, success = request_utils.request_seismic_data(date=value)
-    if success:
-        return display_graph(y_axis='paladin1_fba2', title="Paladin1 FBA2", df=df)
-    return display_graph(y_axis='paladin1_fba2', title="Paladin1 FBA2", df=df)
-
-
-@callback(
-    Output(component_id='graph6', component_property='figure'),
-    Input('submit-val', 'n_clicks'),
-    State('input-on-submit', 'value'),
-    prevent_initial_call=True
-)
-def update_output_graph1(n_clicks, value):
-    df, success = request_utils.request_seismic_data(date=value)
-    if success:
-        return display_graph(y_axis='paladin1_fba3', title="Paladin1 FBA3", df=df)
-    return display_graph(y_axis='paladin1_fba3', title="Paladin1 FBA3", df=df)
-
-
-# @callback(
-#     Output(component_id='graph7', component_property='figure'),
-#     Input('submit-val', 'n_clicks'),
-#     State('input-on-submit', 'value'),
-#     prevent_initial_call=True
-# )
-# def update_output_graph1(n_clicks, value):
-#     df, success = request_utils.request_seismic_data(date=value)
-#     if success:
-#         return display_graph(y_axis='paladin2_geophone1', title="Paladin2 GP1", df=df)
-#     return display_graph(y_axis='paladin2_geophone1', title="Paladin2 GP1", df=df)
-#
-#
-# @callback(
-#     Output(component_id='graph8', component_property='figure'),
-#     Input('submit-val', 'n_clicks'),
-#     State('input-on-submit', 'value'),
-#     prevent_initial_call=True
-# )
-# def update_output_graph1(n_clicks, value):
-#     df, success = request_utils.request_seismic_data(date=value)
-#     if success:
-#         return display_graph(y_axis='paladin2_geophone2', title="Paladin2 GP2", df=df)
-#     return display_graph(y_axis='paladin2_geophone2', title="Paladin2 GP2", df=df)
-#
-#
-# @callback(
-#     Output(component_id='graph9', component_property='figure'),
-#     Input('submit-val', 'n_clicks'),
-#     State('input-on-submit', 'value'),
-#     prevent_initial_call=True
-# )
-# def update_output_graph1(n_clicks, value):
-#     df, success = request_utils.request_seismic_data(date=value)
-#     if success:
-#         return display_graph(y_axis='paladin2_geophone3', title="Paladin2 GP3", df=df)
-#     return display_graph(y_axis='paladin2_geophone3', title="Paladin2 GP3", df=df)
-#
-#
-# @callback(
-#     Output(component_id='graph10', component_property='figure'),
-#     Input('submit-val', 'n_clicks'),
-#     State('input-on-submit', 'value'),
-#     prevent_initial_call=True
-# )
-# def update_output_graph1(n_clicks, value):
-#     df, success = request_utils.request_seismic_data(date=value)
-#     if success:
-#         return display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA1", df=df)
-#     return display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA1", df=df)
-#
-#
-# @callback(
-#     Output(component_id='graph11', component_property='figure'),
-#     Input('submit-val', 'n_clicks'),
-#     State('input-on-submit', 'value'),
-#     prevent_initial_call=True
-# )
-# def update_output_graph1(n_clicks, value):
-#     df, success = request_utils.request_seismic_data(date=value)
-#     if success:
-#         return display_graph(y_axis='paladin2_fba2', title="Paladin2 FBA2", df=df)
-#     return display_graph(y_axis='paladin2_fba2', title="Paladin2 FBA2", df=df)
-#
-#
-# @callback(
-#     Output(component_id='graph12', component_property='figure'),
-#     Input('submit-val', 'n_clicks'),
-#     State('input-on-submit', 'value'),
-#     prevent_initial_call=True
-# )
-# def update_output_graph1(n_clicks, value):
-#     df, success = request_utils.request_seismic_data(date=value)
-#     if success:
-#         return display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=df)
-#     return display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=df)
+    # Return statement - return data to graph.
+    return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=dataframe_obj),\
+        display_graph(y_axis='paladin1_geophone2', title="Paladin1 GP2", df=dataframe_obj), \
+        display_graph(y_axis='paladin1_geophone3', title="Paladin1 GP3", df=dataframe_obj), \
+        display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA1", df=dataframe_obj), \
+        display_graph(y_axis='paladin1_fba2', title="Paladin1 FBA2", df=dataframe_obj), \
+        display_graph(y_axis='paladin1_fba3', title="Paladin1 FBA3", df=dataframe_obj), \
+        display_graph(y_axis='paladin2_geophone1', title="Paladin2 GP1", df=dataframe_obj), \
+        display_graph(y_axis='paladin2_geophone2', title="Paladin2 GP2", df=dataframe_obj), \
+        not is_open if not status else is_open
+        # display_graph(y_axis='paladin2_geophone3', title="Paladin2 GP3", df=dataframe_obj), \
+        # display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA1", df=dataframe_obj), \
+        # display_graph(y_axis='paladin2_fba2', title="Paladin2 FBA2", df=dataframe_obj), \
+        # display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=dataframe_obj), \
+        # not is_open if not status else is_open
