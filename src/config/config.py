@@ -45,3 +45,6 @@ def get_datetime_details():
 
 
 _dt, date, year, month, day, time = get_datetime_details()
+
+SNOLAB_LOGO = "https://res.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco" \
+              ",dpr_1/c06ghtpgpqqm5k8m7z2j"

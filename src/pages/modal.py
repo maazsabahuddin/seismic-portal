@@ -4,7 +4,6 @@ from dash import html, dcc
 from datetime import date
 from src.config import config
 
-SNOLAB_LOGO = "https://www.cap.ca/wp-content/uploads/2017/03/snolab-logo-websize-2.jpg"
 
 danger_modal = dbc.Modal(
     [
@@ -48,8 +47,8 @@ navbar = dbc.Navbar(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=SNOLAB_LOGO, height="40px")),
-                        dbc.Col(dbc.NavbarBrand("Seismic Events & Activities", className="ms-2")),
+                        dbc.Col(html.Img(src=config.SNOLAB_LOGO, height="80px", alt="homepage", className="dark-logo")),
+                        dbc.Col(dbc.NavbarBrand("Seismic Events & Activities", className="ms-2 fs-3")),
                     ],
                     align="center",
                     className="g-0",
