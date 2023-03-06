@@ -37,7 +37,7 @@ def display_graph(y_axis=None, title=None, df=None):
     :param df:
     :return:
     """
-    fig = px.line(df, x='datetime', y=y_axis, title=title)
+    fig = px.line(df, x='datetime', y=y_axis, title=title, template="plotly_dark")
     return fig
 
 
@@ -71,7 +71,7 @@ layout = html.Div([
                 dbc.Col(dcc.Graph(id="graph4", figure=graph_figure()), width=4),
                 dbc.Col(dcc.Graph(id="graph5", figure=graph_figure()), width=4),
                 dbc.Col(dcc.Graph(id="graph6", figure=graph_figure()), width=4)
-            ])
+            ], className="py-2")
         ]
     ),
     dcc.Loading(
@@ -93,11 +93,11 @@ layout = html.Div([
                 dbc.Col(dcc.Graph(id="graph10", figure=graph_figure()), width=4),
                 dbc.Col(dcc.Graph(id="graph11", figure=graph_figure()), width=4),
                 dbc.Col(dcc.Graph(id="graph12", figure=graph_figure()), width=4)
-            ])
+            ], className="pt-2")
         ]
     ),
 
-], className="wrapper container")
+], className="wrapper container pt-4")
 
 
 @callback(
