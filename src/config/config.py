@@ -32,3 +32,16 @@ GRAPH_STATIC_DATA = pd.DataFrame([{
                         'paladin2_fba3': 0.0,
                         'datetime': '',
                     }])
+
+
+def get_datetime_details():
+    """
+    This function will return
+    """
+    from datetime import datetime
+    _datetime = datetime.now()
+    return _datetime, _datetime.date(), _datetime.year, str(_datetime.month).zfill(2), str(_datetime.day).zfill(2), \
+        _datetime.time().replace(microsecond=0)
+
+
+_dt, date, year, month, day, time = get_datetime_details()

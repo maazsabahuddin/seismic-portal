@@ -4,6 +4,7 @@ from config import config
 # Framework Imports
 from dash import Dash, html, page_container
 
+from src.pages import modal
 
 app = Dash(__name__,
            use_pages=True,
@@ -17,7 +18,8 @@ app = Dash(__name__,
            ])
 
 app.layout = html.Div([
-    # page_container
+    modal.navbar,
+    page_container,
 ])
 
 

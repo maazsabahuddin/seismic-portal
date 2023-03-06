@@ -1,5 +1,6 @@
 # Python imports
 import dash
+from datetime import date
 
 # Local Imports
 from src.pages import modal
@@ -46,11 +47,8 @@ def graph_figure():
 
 layout = html.Div([
 
-    html.Center(
-        html.H1(children=f'Seismic Events or Activities - {config.global_date}', id="heading"),
-    ),
-    html.Div(dcc.Input(id='input-on-submit', type='text', value=config.global_date)),
-    html.Button('Submit', id='submit-val', n_clicks=0),
+    # html.Div(dcc.Input(id='input-on-submit', type='text', value=config.global_date)),
+    # html.Button('Submit', id='submit-val', n_clicks=0),
 
     html.Center(modal.danger_modal),
 
@@ -103,18 +101,6 @@ layout = html.Div([
 
 
 @callback(
-    Output('heading', 'children'),
-    Input('submit-val', 'n_clicks'),
-    State('input-on-submit', 'value'),
-    prevent_initial_call=True
-)
-def update_output_heading(n_clicks, value):
-    if not value or not n_clicks:
-        return f'Seismic Events or Activities - {config.global_date}'
-    return f'Seismic Events or Activities - {value}'
-
-
-@callback(
     [Output(component_id='graph1', component_property='figure'),
      Output(component_id='graph2', component_property='figure'),
      Output(component_id='graph3', component_property='figure'),
@@ -129,16 +115,15 @@ def update_output_heading(n_clicks, value):
      # Output(component_id='graph12', component_property='figure'),
      Output(component_id="modal", component_property="is_open")],
 
-    [Input('submit-val', 'n_clicks'),
+    [Input('my-date-picker-single', 'date'),
      Input("close", "n_clicks")],
 
-    [State('input-on-submit', 'value'),
-     State("modal", "is_open")]
+    [State("modal", "is_open")]
 )
-def update_output_graph1(n_submit, n_clicks_close, value, is_open):
+def update_output_graph1(date_value, n_clicks_close, is_open):
     """
     This function will be responsible to send the updated data to graphs.
-    :param n_submit:
+    :param date_value:
     :param n_clicks_close:
     :param value:
     :param is_open:
@@ -160,10 +145,14 @@ def update_output_graph1(n_submit, n_clicks_close, value, is_open):
             # display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=config.GRAPH_STATIC_DATA), \
             # not is_open
 
+    if date_value is not None:
+        date_object = date.fromisoformat(date_value)
+        date_value = date_object.strftime('%Y-%m-%d')
+
     # Fetch data from Server is the date is different
     global dataframe_obj, status
-    if value != config.global_date:
-        dataframe_obj, status = get_dataframe(date=value)
+    if date_value != config.global_date:
+        dataframe_obj, status = get_dataframe(date=date_value)
 
     # Return statement - return data to graph.
     return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=dataframe_obj),\
