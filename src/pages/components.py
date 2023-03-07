@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 from datetime import date
 from src.config import config
+from datetime import datetime
 
 
 danger_modal = dbc.Modal(
@@ -23,18 +24,11 @@ search_bar = dbc.Row(
     [
         dcc.DatePickerSingle(
             id='my-date-picker-single',
-            min_date_allowed=date(2017, 9, 19),
-            max_date_allowed=date(int(config.year), int(config.month), int(config.day)),
-            initial_visible_month=date(int(config.year), int(config.month), int(config.day)),
-            date=date(int(config.year), int(config.month), int(config.day)),
-        ),
-        # dbc.Col(dbc.Input(id="input-on-submit", type="text", placeholder="Search", value=config.global_date)),
-        # dbc.Col(
-        #     dbc.Button(
-        #         "Update", color="primary", className="ms-2", n_clicks=0, id="submit-val"
-        #     ),
-        #     width="auto",
-        # ),
+            min_date_allowed=date(2022, 12, 31),
+            max_date_allowed=date(int(datetime.now().year), int(datetime.now().month), int(datetime.now().day)),
+            initial_visible_month=date(int(datetime.now().year), int(datetime.now().month), int(datetime.now().day)),
+            date=date(int(datetime.now().year), int(datetime.now().month), int(datetime.now().day)),
+        )
     ],
     className="g-0 ms-auto flex-nowrap mt-3 mt-md-0",
     align="right",

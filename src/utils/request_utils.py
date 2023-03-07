@@ -26,7 +26,7 @@ def request_seismic_data(date):
         response = requests.get(URL)
         data = json.loads(response.text)
         print(f"Success: {response} - {URL}")
-        return pd.DataFrame(data['responseData']), True
+        return pd.DataFrame(data['responseData']['results']), True, data['responseData']['date']
     except Exception as e:
         print(f"Network Error: {e}")
-        return config.GRAPH_STATIC_DATA, False
+        return config.GRAPH_STATIC_DATA, False, date

@@ -3,7 +3,7 @@ import dash
 from datetime import date
 
 # Local Imports
-from src.pages import modal
+from src.pages import components
 from src.utils import request_utils
 from src.config import config
 
@@ -16,17 +16,16 @@ import plotly.express as px
 dash.register_page(__name__)
 
 
-def get_dataframe(date=None):
+def get_dataframe(_date=None):
     """
-    This function is reponsible to return a dataframe object by fetching data from backend.
-    :param date:
+    This function is responsible to return a dataframe object by fetching data from backend.
+    :param _date:
     :return:
     """
-    df, success = request_utils.request_seismic_data(date=date)
-    return df, success
+    return request_utils.request_seismic_data(date=_date)
 
 
-dataframe_obj, status = get_dataframe(date=config.global_date)
+dataframe_obj, status, date_fetched = get_dataframe(_date=date.today().strftime("%Y-%m-%d"))
 
 
 def display_graph(y_axis=None, title=None, df=None):
@@ -47,10 +46,7 @@ def graph_figure():
 
 layout = html.Div([
 
-    # html.Div(dcc.Input(id='input-on-submit', type='text', value=config.global_date)),
-    # html.Button('Submit', id='submit-val', n_clicks=0),
-
-    html.Center(modal.danger_modal),
+    html.Center(components.danger_modal),
 
     dcc.Loading(
         id="loading-1",
@@ -125,11 +121,14 @@ def update_output_graph1(date_value, n_clicks_close, is_open):
     This function will be responsible to send the updated data to graphs.
     :param date_value:
     :param n_clicks_close:
-    :param value:
     :param is_open:
     :return:
     """
-    if n_clicks_close:
+    if date_value is not None:
+        date_object = date.fromisoformat(date_value)
+        date_value = date_object.strftime('%Y-%m-%d')
+
+    if n_clicks_close or date.today().strftime("%Y-%m-%d") < date_value:
         return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=config.GRAPH_STATIC_DATA), \
             display_graph(y_axis='paladin1_geophone2', title="Paladin1 GP2", df=config.GRAPH_STATIC_DATA), \
             display_graph(y_axis='paladin1_geophone3', title="Paladin1 GP3", df=config.GRAPH_STATIC_DATA), \
@@ -145,14 +144,10 @@ def update_output_graph1(date_value, n_clicks_close, is_open):
             # display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=config.GRAPH_STATIC_DATA), \
             # not is_open
 
-    if date_value is not None:
-        date_object = date.fromisoformat(date_value)
-        date_value = date_object.strftime('%Y-%m-%d')
-
     # Fetch data from Server is the date is different
-    global dataframe_obj, status
-    if date_value != config.global_date:
-        dataframe_obj, status = get_dataframe(date=date_value)
+    global dataframe_obj, status, date_fetched
+    if date_value != date_fetched:
+        dataframe_obj, status, date_fetched = get_dataframe(_date=date_value)
 
     # Return statement - return data to graph.
     return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=dataframe_obj),\
