@@ -1,10 +1,9 @@
 # Local imports
 from config import config
+from pages import components
 
 # Framework Imports
 from dash import Dash, html, page_container
-
-from src.pages import components
 
 app = Dash(__name__,
            use_pages=True,

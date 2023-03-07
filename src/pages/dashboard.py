@@ -13,7 +13,7 @@ from dash import dcc, html, Output, Input, State, callback
 import plotly.express as px
 
 
-dash.register_page(__name__)
+dash.register_page(__name__, title="Seismic Events Dashboard")
 
 
 def get_dataframe(_date=None):
@@ -36,12 +36,16 @@ def display_graph(y_axis=None, title=None, df=None):
     :param df:
     :return:
     """
-    fig = px.line(df, x='datetime', y=y_axis, title=title, template="plotly_dark")
+    fig = px.line(df, x='datetime', y=y_axis, title=title, template="plotly_dark", labels={
+                     "datetime": "Time",
+                     y_axis: "PPV (mm/s)"
+                 })
+    fig.update_layout(yaxis_range=[0, 0.003])
     return fig
 
 
 def graph_figure():
-    return {"layout": {"height": 480, "width": 480}}
+    return {}
 
 
 layout = html.Div([
@@ -53,9 +57,7 @@ layout = html.Div([
         type="default",
         children=[
             dbc.Row([
-                dbc.Col(dcc.Graph(id="graph1", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph2", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph3", figure=graph_figure()), width=4),
+                dbc.Col(dcc.Graph(id="graph1", figure=graph_figure()), width=12),
             ])
         ]
     ),
@@ -64,9 +66,7 @@ layout = html.Div([
         type="default",
         children=[
             dbc.Row([
-                dbc.Col(dcc.Graph(id="graph4", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph5", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph6", figure=graph_figure()), width=4)
+                dbc.Col(dcc.Graph(id="graph2", figure=graph_figure()), width=12),
             ], className="py-2")
         ]
     ),
@@ -75,9 +75,7 @@ layout = html.Div([
         type="default",
         children=[
             dbc.Row([
-                dbc.Col(dcc.Graph(id="graph7", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph8", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph9", figure=graph_figure()), width=4)
+                dbc.Col(dcc.Graph(id="graph3", figure=graph_figure()), width=12),
             ])
         ]
     ),
@@ -86,9 +84,7 @@ layout = html.Div([
         type="default",
         children=[
             dbc.Row([
-                dbc.Col(dcc.Graph(id="graph10", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph11", figure=graph_figure()), width=4),
-                dbc.Col(dcc.Graph(id="graph12", figure=graph_figure()), width=4)
+                dbc.Col(dcc.Graph(id="graph4", figure=graph_figure()), width=12),
             ], className="pt-2")
         ]
     ),
@@ -101,14 +97,6 @@ layout = html.Div([
      Output(component_id='graph2', component_property='figure'),
      Output(component_id='graph3', component_property='figure'),
      Output(component_id='graph4', component_property='figure'),
-     Output(component_id='graph5', component_property='figure'),
-     Output(component_id='graph6', component_property='figure'),
-     Output(component_id='graph7', component_property='figure'),
-     Output(component_id='graph8', component_property='figure'),
-     # Output(component_id='graph9', component_property='figure'),
-     # Output(component_id='graph10', component_property='figure'),
-     # Output(component_id='graph11', component_property='figure'),
-     # Output(component_id='graph12', component_property='figure'),
      Output(component_id="modal", component_property="is_open")],
 
     [Input('my-date-picker-single', 'date'),
@@ -129,20 +117,11 @@ def update_output_graph1(date_value, n_clicks_close, is_open):
         date_value = date_object.strftime('%Y-%m-%d')
 
     if n_clicks_close or date.today().strftime("%Y-%m-%d") < date_value:
-        return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin1_geophone2', title="Paladin1 GP2", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin1_geophone3', title="Paladin1 GP3", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA1", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin1_fba2', title="Paladin1 FBA2", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin1_fba3', title="Paladin1 FBA3", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin2_geophone1', title="Paladin2 GP1", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin2_geophone2', title="Paladin2 GP2", df=config.GRAPH_STATIC_DATA), \
+        return display_graph(y_axis='paladin1_geophone1', title="Paladin1 Geophone", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin2_geophone1', title="Paladin2 Geophone", df=config.GRAPH_STATIC_DATA), \
+            display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA", df=config.GRAPH_STATIC_DATA), \
             not is_open
-            # display_graph(y_axis='paladin2_geophone3', title="Paladin2 GP3", df=config.GRAPH_STATIC_DATA), \
-            # display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA1", df=config.GRAPH_STATIC_DATA), \
-            # display_graph(y_axis='paladin2_fba2', title="Paladin2 FBA2", df=config.GRAPH_STATIC_DATA), \
-            # display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=config.GRAPH_STATIC_DATA), \
-            # not is_open
 
     # Fetch data from Server is the date is different
     global dataframe_obj, status, date_fetched
@@ -150,17 +129,8 @@ def update_output_graph1(date_value, n_clicks_close, is_open):
         dataframe_obj, status, date_fetched = get_dataframe(_date=date_value)
 
     # Return statement - return data to graph.
-    return display_graph(y_axis='paladin1_geophone1', title="Paladin1 GP1", df=dataframe_obj),\
-        display_graph(y_axis='paladin1_geophone2', title="Paladin1 GP2", df=dataframe_obj), \
-        display_graph(y_axis='paladin1_geophone3', title="Paladin1 GP3", df=dataframe_obj), \
-        display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA1", df=dataframe_obj), \
-        display_graph(y_axis='paladin1_fba2', title="Paladin1 FBA2", df=dataframe_obj), \
-        display_graph(y_axis='paladin1_fba3', title="Paladin1 FBA3", df=dataframe_obj), \
-        display_graph(y_axis='paladin2_geophone1', title="Paladin2 GP1", df=dataframe_obj), \
-        display_graph(y_axis='paladin2_geophone2', title="Paladin2 GP2", df=dataframe_obj), \
+    return display_graph(y_axis='paladin1_geophone', title="Paladin1 Geophone", df=dataframe_obj),\
+        display_graph(y_axis='paladin1_fba', title="Paladin1 FBA", df=dataframe_obj), \
+        display_graph(y_axis='paladin2_geophone', title="Paladin2 Geophone", df=dataframe_obj), \
+        display_graph(y_axis='paladin2_fba', title="Paladin2 FBA", df=dataframe_obj), \
         not is_open if not status else is_open
-        # display_graph(y_axis='paladin2_geophone3', title="Paladin2 GP3", df=dataframe_obj), \
-        # display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA1", df=dataframe_obj), \
-        # display_graph(y_axis='paladin2_fba2', title="Paladin2 FBA2", df=dataframe_obj), \
-        # display_graph(y_axis='paladin2_fba3', title="Paladin2 FBA3", df=dataframe_obj), \
-        # not is_open if not status else is_open
