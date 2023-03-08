@@ -3,9 +3,9 @@ import dash
 from datetime import date
 
 # Local Imports
-from src.pages import components
-from src.utils import request_utils
-from src.config import config
+from dashboard.pages import components
+from dashboard.utils import request_utils
+from dashboard.config import config
 
 # Framework Imports
 import dash_bootstrap_components as dbc

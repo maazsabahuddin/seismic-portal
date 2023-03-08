@@ -2,7 +2,7 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 from datetime import date
-from src.config import config
+from dashboard.config import config
 from datetime import datetime
 
 

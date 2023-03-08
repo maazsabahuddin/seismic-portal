@@ -4,7 +4,7 @@ import json
 import pandas as pd
 
 # Local Imports
-from src.config import config
+from dashboard.config import config
 
 
 def check_server_status(url):

@@ -1,9 +1,9 @@
 # Local imports
-from config import config
-from pages import components
+from dashboard.pages import components
 
 # Framework Imports
 from dash import Dash, html, page_container
+from dashboard.config import config
 
 app = Dash(__name__,
            use_pages=True,
@@ -15,12 +15,3 @@ app = Dash(__name__,
                    'content': 'width=device-width, initial-scale=1'
                }
            ])
-
-app.layout = html.Div([
-    components.navbar,
-    page_container,
-])
-
-
-if __name__ == '__main__':
-    app.run_server(debug=True)
