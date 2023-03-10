@@ -25,19 +25,21 @@ def get_dataframe(_date=None):
     return request_utils.request_seismic_data(date=_date)
 
 
-def display_graph(y_axis=None, title=None, df=None):
+def display_graph(y_axis=None, title=None, df=None, y_axis_limit=None):
     """
     This function will be displaying the graph.
     :param y_axis:
     :param title:
     :param df:
+    :param y_axis_limit:
     :return:
     """
     fig = px.line(df, x='datetime', y=y_axis, title=title, template="plotly_dark", labels={
                      "datetime": "Time",
-                     y_axis: "PPV (mm/s)"
+                     y_axis: "PPV (m/s)"
                  })
-    fig.update_layout(yaxis_range=[0, 0.003])
+    # fig.update_layout(yaxis_range=[0, float(y_axis_limit)])
+    fig.update_layout(yaxis_range=[0, 0.05])
     return fig
 
 
@@ -114,18 +116,28 @@ def update_output_graph1(date_value, n_clicks_close, is_open):
         date_value = date_object.strftime('%Y-%m-%d')
 
     if n_clicks_close or date.today().strftime("%Y-%m-%d") < date_value:
-        return display_graph(y_axis='paladin1_geophone1', title="Paladin1 Geophone", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin2_geophone1', title="Paladin2 Geophone", df=config.GRAPH_STATIC_DATA), \
-            display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA", df=config.GRAPH_STATIC_DATA), \
+        return display_graph(y_axis='paladin1_geophone1', title="Paladin1 Geophone", df=config.GRAPH_STATIC_DATA,
+                             y_axis_limit=0.0), \
+            display_graph(y_axis='paladin1_fba1', title="Paladin1 FBA", df=config.GRAPH_STATIC_DATA,
+                          y_axis_limit=0.0), \
+            display_graph(y_axis='paladin2_geophone1', title="Paladin2 Geophone", df=config.GRAPH_STATIC_DATA,
+                          y_axis_limit=0.0), \
+            display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA", df=config.GRAPH_STATIC_DATA,
+                          y_axis_limit=0.0), \
             not is_open
 
     # Fetch data from server
     dataframe_obj, status, date_fetched = get_dataframe(_date=date_value)
+    max_value = dataframe_obj.max()
+    print(max_value)
 
     # Return statement - return data to graph.
-    return display_graph(y_axis='paladin1_geophone', title="Paladin1 Geophone", df=dataframe_obj),\
-        display_graph(y_axis='paladin1_fba', title="Paladin1 FBA", df=dataframe_obj), \
-        display_graph(y_axis='paladin2_geophone', title="Paladin2 Geophone", df=dataframe_obj), \
-        display_graph(y_axis='paladin2_fba', title="Paladin2 FBA", df=dataframe_obj), \
+    return display_graph(y_axis='paladin1_geophone', title="Paladin1 Geophone", df=dataframe_obj,
+                         y_axis_limit=max_value['paladin1_geophone']),\
+        display_graph(y_axis='paladin1_fba', title="Paladin1 FBA", df=dataframe_obj,
+                      y_axis_limit=max_value['paladin1_fba']), \
+        display_graph(y_axis='paladin2_geophone', title="Paladin2 Geophone", df=dataframe_obj,
+                      y_axis_limit=max_value['paladin2_geophone']), \
+        display_graph(y_axis='paladin2_fba', title="Paladin2 FBA", df=dataframe_obj,
+                      y_axis_limit=max_value['paladin2_fba']), \
         not is_open if not status else is_open
