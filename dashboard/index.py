@@ -1,12 +1,9 @@
-# Local imports
-from dashboard.pages import components
-
 # Framework Imports
 from dash import Dash, html, page_container
 from dashboard.config import config
 
 app = Dash(__name__,
-           use_pages=True,
+           # use_pages=True,
            external_stylesheets=config.external_stylesheets,
            title='Seismic Activities',
            meta_tags=[

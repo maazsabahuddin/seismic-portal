@@ -1,6 +1,7 @@
 # Python Imports
 import datetime
 import pandas as pd
+from datetime import date
 
 # Module Imports
 from dotenv import dotenv_values
@@ -18,19 +19,11 @@ global_date = datetime.date.today().strftime("%Y-%m-%d")
 
 # Static Data
 GRAPH_STATIC_DATA = pd.DataFrame([{
-                        'paladin1_geophone1': 0.0,
-                        'paladin1_geophone2': 0.0,
-                        'paladin1_geophone3': 0.0,
-                        'paladin1_fba1': 0.0,
-                        'paladin1_fba2': 0.0,
-                        'paladin1_fba3': 0.0,
-                        'paladin2_geophone1': 0.0,
-                        'paladin2_geophone2': 0.0,
-                        'paladin2_geophone3': 0.0,
-                        'paladin2_fba1': 0.0,
-                        'paladin2_fba2': 0.0,
-                        'paladin2_fba3': 0.0,
-                        'datetime': '',
+                        'paladin1_geophone': 0.0,
+                        'paladin1_fba': 0.0,
+                        'paladin2_geophone': 0.0,
+                        'paladin2_fba': 0.0,
+                        'datetime': date.today().strftime("%Y-%m-%d"),
                     }])
 
 

@@ -18,14 +18,11 @@ dash.register_page(__name__, title="Seismic Events Dashboard")
 
 def get_dataframe(_date=None):
     """
-    This function is responsible to return a dataframe object by fetching data from backend.
+    This function is responsible to return a dataframe object by fetching data from the server.
     :param _date:
     :return:
     """
     return request_utils.request_seismic_data(date=_date)
-
-
-dataframe_obj, status, date_fetched = get_dataframe(_date=date.today().strftime("%Y-%m-%d"))
 
 
 def display_graph(y_axis=None, title=None, df=None):
@@ -123,10 +120,8 @@ def update_output_graph1(date_value, n_clicks_close, is_open):
             display_graph(y_axis='paladin2_fba1', title="Paladin2 FBA", df=config.GRAPH_STATIC_DATA), \
             not is_open
 
-    # Fetch data from Server is the date is different
-    global dataframe_obj, status, date_fetched
-    if date_value != date_fetched:
-        dataframe_obj, status, date_fetched = get_dataframe(_date=date_value)
+    # Fetch data from server
+    dataframe_obj, status, date_fetched = get_dataframe(_date=date_value)
 
     # Return statement - return data to graph.
     return display_graph(y_axis='paladin1_geophone', title="Paladin1 Geophone", df=dataframe_obj),\

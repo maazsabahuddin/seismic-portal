@@ -1,9 +1,13 @@
 # External package imports
 import dash_bootstrap_components as dbc
 from dash import html, dcc
-from datetime import date
-from dashboard.config import config
+
+# Python Imports
 from datetime import datetime
+from datetime import date
+
+# Local Imports
+from dashboard.config import config
 
 
 danger_modal = dbc.Modal(
