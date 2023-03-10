@@ -129,7 +129,6 @@ def update_output_graph1(date_value, n_clicks_close, is_open):
     # Fetch data from server
     dataframe_obj, status, date_fetched = get_dataframe(_date=date_value)
     max_value = dataframe_obj.max()
-    print(max_value)
 
     # Return statement - return data to graph.
     return display_graph(y_axis='paladin1_geophone', title="Paladin1 Geophone", df=dataframe_obj,
